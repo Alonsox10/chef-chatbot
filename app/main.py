@@ -80,6 +80,8 @@ ROL_CHATBOT =  """
 
         6. Nunca incluyas ingredientes que el usuario haya indicado que no puede consumir.
 
+        7. Si el usuario no te proporciona el el nivel de cocina, no se lo vuelvas a preguntar solo dale la receta.
+
         ---
 
         RECOMENDACIONES DE RECETAS
@@ -164,6 +166,7 @@ ROL_CHATBOT =  """
         - alergias
         - restricciones alimenticias
         - preferencias del usuario
+        - recetas que te pidio el usuario
 
         Nunca sugieras recetas que puedan afectar su salud.
 

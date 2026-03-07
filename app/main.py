@@ -1,14 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , HTTPException
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-from pydantic import BaseModel
+from pydantic import BaseModel , Field
 from pathlib import Path
+from loguru import logger
 import os
 
 
 load_dotenv()
 
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+if not OPENAI_API_KEY:
+    raise ValueError("Falta la API key de openai")
+
+client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 System_prompt = Path("prompts/system_prompt.md").read_text(encoding="utf-8")
                 
@@ -19,16 +25,17 @@ CHAT_HISTORY = [{
 }
 ]
 
-
 app = FastAPI()
 
 class getMessage(BaseModel):
-    prompt: str
+    prompt: str = Field(...,min_length=1,max_length=650)
 
 
 @app.post("/bot")
 async def chatBot(response_chat: getMessage):
     try:
+
+        logger.info(f"Mensaje recibido: {response_chat.prompt}")
 
         CHAT_HISTORY.append({"role":"user","content":response_chat.prompt})
 
@@ -40,9 +47,12 @@ async def chatBot(response_chat: getMessage):
 
         message = response.output_text
         CHAT_HISTORY.append({"role":"assistant","content":message})
+
+        logger.info("Respuesta generada correctamente")
         return message
     
     except Exception as e:
-        return {"Error":str(e)}
+        logger.error(f"Error en el chatbot: {e}")
+        raise HTTPException(status_code=500,detail="Error interno del servidor")
 
     

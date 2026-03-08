@@ -18,7 +18,8 @@ client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 System_prompt = Path("prompts/system_prompt.md").read_text(encoding="utf-8")
                 
-
+# Historial global de conversación.
+# Se usa para mantener contexto en el modelo.
 CHAT_HISTORY = [{
         "role":"system",
         "content":System_prompt
@@ -37,10 +38,11 @@ async def chatBot(response_chat: getMessage):
 
         logger.info(f"Mensaje recibido: {response_chat.prompt}")
 
+        # Guardamos el mensaje del usuario para mantener contexto de la conversación.
         CHAT_HISTORY.append({"role":"user","content":response_chat.prompt})
 
         response =  await client.responses.create(
-            model="gpt-4o-mini",
+            model="gpt-4o-mini", # Usamos  el modelo gpt-4o-mini para reducir costo y latencia
             input=CHAT_HISTORY,
             temperature=0.5
         )
@@ -54,5 +56,8 @@ async def chatBot(response_chat: getMessage):
     except Exception as e:
         logger.error(f"Error en el chatbot: {e}")
         raise HTTPException(status_code=500,detail="Error interno del servidor")
+    
+    
+    # TODO: mover historial a base de datos cuando implementemos PostgreSQL
 
     

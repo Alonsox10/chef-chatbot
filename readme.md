@@ -14,7 +14,7 @@ Download the project dependencies; you will find a file called requirements. Run
 # Run uvicorn to run the local server
 To start the local server, run the command uvicorn app.main:app --reload
 
-After this, you can test it on Postan.
+After running uvicorn you can test the application from your browser with localhost:8000
 
 # OpenAI API key
 Create a .env file in the root of your project and paste your API key inside, ideally named "OPENAI_API_KEY"

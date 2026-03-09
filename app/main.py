@@ -1,4 +1,7 @@
 from fastapi import FastAPI , HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from pydantic import BaseModel , Field
@@ -26,7 +29,26 @@ CHAT_HISTORY = [{
 }
 ]
 
+
 app = FastAPI()
+
+# Configuración CORS para permitir solicitudes desde el frontend
+# Configuración CORS para permitir solicitudes desde el frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes restringir a dominios específicos si lo prefieres
+    allow_credentials=True,
+    allow_methods=["*"] ,
+    allow_headers=["*"]
+)
+
+# Montar archivos estáticos para servir frontend
+app.mount("/static", StaticFiles(directory="c:/Users/Alonso/Desktop/Certificaciones/Chatbot-chef/frontend"), name="static")
+
+# Ruta para servir index.html como página principal
+@app.get("/")
+async def serve_index():
+    return FileResponse("c:/Users/Alonso/Desktop/Certificaciones/Chatbot-chef/frontend/index.html")
 
 class getMessage(BaseModel):
     prompt: str = Field(...,min_length=1,max_length=650)
@@ -51,7 +73,7 @@ async def chatBot(response_chat: getMessage):
         CHAT_HISTORY.append({"role":"assistant","content":message})
 
         logger.info("Respuesta generada correctamente")
-        return message
+        return {"response": message}
     
     except Exception as e:
         logger.error(f"Error en el chatbot: {e}")

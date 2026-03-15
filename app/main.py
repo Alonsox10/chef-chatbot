@@ -1,6 +1,6 @@
-from fastapi import FastAPI , HTTPException
+from fastapi import FastAPI , HTTPException , Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse , PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -8,14 +8,18 @@ from pydantic import BaseModel , Field
 from pathlib import Path
 from loguru import logger
 import os
+import requests
 
 
 load_dotenv()
+
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 if not OPENAI_API_KEY:
     raise ValueError("Falta la API key de openai")
+
+
 
 client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
@@ -29,8 +33,8 @@ CHAT_HISTORY = [{
 }
 ]
 
-
 app = FastAPI()
+
 
 # Configuración CORS para permitir solicitudes desde el frontend
 # Configuración CORS para permitir solicitudes desde el frontend
@@ -68,7 +72,7 @@ async def chatBot(response_chat: getMessage):
             input=CHAT_HISTORY,
             temperature=0.5
         )
-
+        
         message = response.output_text
         CHAT_HISTORY.append({"role":"assistant","content":message})
 

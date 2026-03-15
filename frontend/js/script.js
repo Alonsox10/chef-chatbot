@@ -24,30 +24,43 @@ chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const prompt = userInput.value.trim();
     if (!prompt) return;
+    sendMessage(prompt);
+});
+
+function sendMessage(prompt) {
     addMessage(prompt, 'user');
     userInput.value = '';
     botTyping.style.display = 'block';
-
-    try {
-        const response = await fetch('http://localhost:8000/bot', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ prompt })
-        });
+    fetch('http://localhost:8000/bot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt })
+    })
+    .then(response => {
         if (!response.ok) throw new Error('Error en el servidor');
-        const data = await response.json();
+        return response.json();
+    })
+    .then(data => {
         addMessage(data.response, 'bot');
-    } catch (err) {
+    })
+    .catch(() => {
         addMessage('Hubo un problema de conexión.', 'bot');
-    } finally {
+    })
+    .finally(() => {
         botTyping.style.display = 'none';
+    });
+}
+
+userInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const prompt = userInput.value.trim();
+        if (prompt) {
+            sendMessage(prompt);
+        }
     }
 });
 
-// Auto-crecimiento del textarea
-userInput.addEventListener('input', () => {
-    userInput.style.height = 'auto';
-    userInput.style.height = userInput.scrollHeight + 'px';
-});
+// Eliminar auto-crecimiento del textarea para mantener tamaño fijo

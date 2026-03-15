@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal Pesquero Chatbot</title>
+    <title>Recomendador de recetas</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -15,8 +15,8 @@
     <main class="chat-container">
         <div class="messages" id="messages"></div>
         <div class="bot-typing" id="botTyping" style="display:none;">El bot está escribiendo...</div>
-        <form class="input-area" id="chatForm">
-            <textarea id="userInput" placeholder="Escribe tu mensaje..." rows="1"></textarea>
+        <form class="input-area" id="chatForm" style="display: flex; gap: 0.5rem; align-items: center;">
+            <textarea id="userInput" placeholder="Escribe tu mensaje..." rows="1" style="flex:1;"></textarea>
             <button type="submit" class="send-btn" aria-label="Enviar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>

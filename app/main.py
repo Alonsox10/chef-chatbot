@@ -10,15 +10,12 @@ from loguru import logger
 import os
 import requests
 
-
 load_dotenv()
-
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 if not OPENAI_API_KEY:
     raise ValueError("Falta la API key de openai")
-
 
 
 client = AsyncOpenAI(api_key=OPENAI_API_KEY)
@@ -27,14 +24,9 @@ System_prompt = Path("prompts/system_prompt.md").read_text(encoding="utf-8")
                 
 # Historial global de conversación.
 # Se usa para mantener contexto en el modelo.
-CHAT_HISTORY = [{
-        "role":"system",
-        "content":System_prompt
-}
-]
+CHAT_HISTORY = []
 
 app = FastAPI()
-
 
 # Configuración CORS para permitir solicitudes desde el frontend
 # Configuración CORS para permitir solicitudes desde el frontend
@@ -61,6 +53,7 @@ class getMessage(BaseModel):
 @app.post("/bot")
 async def chatBot(response_chat: getMessage):
     try:
+        CHAT_HISTORY.append({"role":"system","content":System_prompt})
 
         logger.info(f"Mensaje recibido: {response_chat.prompt}")
 

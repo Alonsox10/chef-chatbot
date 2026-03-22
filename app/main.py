@@ -8,7 +8,7 @@ from pydantic import BaseModel , Field
 from pathlib import Path
 from loguru import logger
 import os
-import requests
+
 
 load_dotenv()
 
@@ -61,9 +61,9 @@ async def chatBot(response_chat: getMessage):
         CHAT_HISTORY.append({"role":"user","content":response_chat.prompt})
 
         response =  await client.responses.create(
-            model="gpt-4o-mini", # Usamos  el modelo gpt-4o-mini para reducir costo y latencia
+            model="gpt-5.1", 
             input=CHAT_HISTORY,
-            temperature=0.5
+            temperature=0
         )
         
         message = response.output_text

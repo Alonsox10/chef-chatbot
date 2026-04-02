@@ -18,6 +18,7 @@ After running uvicorn you can test the application from your browser with localh
 
 # Database integration into the chatbot (under development but testing is possible)
 The project files include a .sql file corresponding to a PostgreSQL database. You must insert the data from this .sql file to perform tests, and you must have PostgreSQL installed.
+To search for ingredients in the database, you currently have to do it manually. It only detects ingredients containing chicken, so to use a search like "I want recipes with chicken." Additionally, user saves have been added, and the bot remembers the user.
 
 # OpenAI API key
 Create a .env file in the root of your project and paste your API key inside, ideally named "OPENAI_API_KEY"

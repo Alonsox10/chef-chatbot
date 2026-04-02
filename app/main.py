@@ -1,30 +1,14 @@
-from fastapi import FastAPI , HTTPException , Request
+from fastapi import FastAPI , HTTPException 
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse , PlainTextResponse
+from fastapi.responses import FileResponse 
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from openai import AsyncOpenAI
 from pydantic import BaseModel , Field
 from pathlib import Path
-from loguru import logger
-import os
+from app.Controller.chatbot_controller import chat_process
 
 
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-if not OPENAI_API_KEY:
-    raise ValueError("Falta la API key de openai")
-
-
-client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-
-System_prompt = Path("prompts/system_prompt.md").read_text(encoding="utf-8")
-                
-# Historial global de conversación.
-# Se usa para mantener contexto en el modelo.
-CHAT_HISTORY = []
+BASE_DIR = Path(__file__).resolve().parent
+VIEW_DIR = BASE_DIR / "View"
 
 app = FastAPI()
 
@@ -39,44 +23,28 @@ app.add_middleware(
 )
 
 # Montar archivos estáticos para servir frontend
-app.mount("/static", StaticFiles(directory="c:/Users/Alonso/Desktop/Certificaciones/Chatbot-chef/frontend"), name="static")
+app.mount("/static", StaticFiles(directory=str(VIEW_DIR)), name="static")
 
 # Ruta para servir index.html como página principal
 @app.get("/")
 async def serve_index():
-    return FileResponse("c:/Users/Alonso/Desktop/Certificaciones/Chatbot-chef/frontend/index.html")
+    return FileResponse(VIEW_DIR / "index.html")
 
 class getMessage(BaseModel):
-    prompt: str = Field(...,min_length=1,max_length=650)
+    prompt: str = Field(...,min_length=1)
+    session_id: str = Field(...,min_length=1)
 
 
 @app.post("/bot")
 async def chatBot(response_chat: getMessage):
     try:
-        CHAT_HISTORY.append({"role":"system","content":System_prompt})
-
-        logger.info(f"Mensaje recibido: {response_chat.prompt}")
-
-        # Guardamos el mensaje del usuario para mantener contexto de la conversación.
-        CHAT_HISTORY.append({"role":"user","content":response_chat.prompt})
-
-        response =  await client.responses.create(
-            model="gpt-5.1", 
-            input=CHAT_HISTORY,
-            temperature=0
-        )
-        
-        message = response.output_text
-        CHAT_HISTORY.append({"role":"assistant","content":message})
-
-        logger.info("Respuesta generada correctamente")
+        message = await chat_process(response_chat.prompt, response_chat.session_id)
         return {"response": message}
     
-    except Exception as e:
-        logger.error(f"Error en el chatbot: {e}")
-        raise HTTPException(status_code=500,detail="Error interno del servidor")
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
     
     
-    # TODO: mover historial a base de datos cuando implementemos PostgreSQL
 
     

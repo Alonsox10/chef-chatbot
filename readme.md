@@ -16,5 +16,8 @@ To start the local server, run the command uvicorn app.main:app --reload
 
 After running uvicorn you can test the application from your browser with localhost:8000
 
+# Database integration into the chatbot (under development but testing is possible)
+The project files include a .sql file corresponding to a PostgreSQL database. You must insert the data from this .sql file to perform tests, and you must have PostgreSQL installed.
+
 # OpenAI API key
 Create a .env file in the root of your project and paste your API key inside, ideally named "OPENAI_API_KEY"

@@ -5,6 +5,9 @@ const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
 const botTyping = document.getElementById('botTyping');
 
+// ID único de sesión: se genera al abrir la página y se envía en cada mensaje
+const sessionId = crypto.randomUUID();
+
 function addMessage(text, sender) {
     const bubble = document.createElement('div');
     bubble.className = `bubble ${sender}`;
@@ -19,6 +22,9 @@ function addMessage(text, sender) {
     messages.appendChild(bubble);
     messages.scrollTop = messages.scrollHeight;
 }
+
+// Mensaje inicial del bot pidiendo el nombre
+addMessage('¡Hola! 👨‍🍳 Soy tu chef virtual. Para comenzar, ¿cuál es tu nombre?', 'bot');
 
 chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -36,7 +42,7 @@ function sendMessage(prompt) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt, session_id: sessionId })
     })
     .then(response => {
         if (!response.ok) throw new Error('Error en el servidor');
@@ -62,5 +68,3 @@ userInput.addEventListener('keydown', function(e) {
         }
     }
 });
-
-// Eliminar auto-crecimiento del textarea para mantener tamaño fijo

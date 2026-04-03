@@ -21,5 +21,12 @@ The project files include a .sql file corresponding to a PostgreSQL database. Yo
 To search for ingredients in the database, you currently have to do it manually. It only detects ingredients containing chicken, so to use a search like "I want recipes with chicken." Additionally, user saves have been added, and the bot remembers the user.
 Also, when the bot asks for your name, just enter your name, for example "Alonso".
 
+If you wish, you can add new users from scratch by interacting with the bot. The bot will ask for your name, and you should only enter your name. If you try it with Postman, it should have the following structure:
+
+{
+"prompt: "Alonso"
+"session_id: "4" (this refers to the ID that the name has in the database)
+}
+
 # OpenAI API key
 Create a .env file in the root of your project and paste your API key inside, ideally named "OPENAI_API_KEY"
